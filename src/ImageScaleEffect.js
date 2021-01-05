@@ -19,42 +19,73 @@ export default function ContainerScaleEffect(props) {
   let imageBounding = null
 
   const closeEvent = () => {
-    const keyframesStyle = `
-      @keyframes ContainerScaleEffectClose {
-        to {
-          top: ${imageBounding.y}px;
-          left: ${imageBounding.x}px;
-          transform: translate(-50%, -50%);
+    imageBounding = element.getBoundingClientRect()
 
-          height: 300px;
-          width: 30%;
-        }
-      }
-    `;
+    const scaleWidthPercent = props.scaleWidthPercent ? props.scaleWidthPercent : 80
+    const imageScalePercent = (window.innerWidth * scaleWidthPercent / 100) * (100 / imageBounding.width) / 100
+
+
+
+
+          // height: 300px;
+          // width: 30%;
+
+          //           top: ${imageBounding.y}px;
+          // left: ${imageBounding.x}px;
+
+
+
     const closeStyle = `
     .ContainerScaleEffectClose {
-        animation-duration: 2s;
-        animation-fill-mode: forwards;
-        animation-name: ContainerScaleEffectClose;
+      -webkit-animation-duration:2s,2s;
+      animation-duration:2s,2s;
+      -webkit-animation-fill-mode:forwards;
+      animation-fill-mode:forwards;
+      -webkit-animation-name:ContainerScaleEffectCloseKeyframe;
+      animation-name:ContainerScaleEffectCloseKeyframe;
+
+            animation: ContainerScaleEffectCloseKeyframe 10s infinite;
+
       }`
-    injectStyle(keyframesStyle);
     injectStyle(closeStyle)
 
-
-    scaleRef.current.classList.add("ContainerScaleEffectClose")
+    setTimeout(scaleRef.current.classList.add("ContainerScaleEffectClose"), 1000)
+    
     // document.getElementById("ScaleEffect").outerHTML = "";
     element.style.opacity = 1 //to do
   }
 
   const handleImageScale = (target) => {
-    const scaleWidthPercent = props.scaleWidthPercent ? props.scaleWidthPercent : 80
+    element = target
     imageBounding = target.getBoundingClientRect()
+
+    const scaleWidthPercent = props.scaleWidthPercent ? props.scaleWidthPercent : 80
     const imageScalePercent = (window.innerWidth * scaleWidthPercent / 100) * (100 / imageBounding.width) / 100
 
-    element = target
+
     target.style.opacity = props.opacity ? props.opacity : 0    
 
     //style
+
+    const keyframesStyle = `
+      @-webkit-keyframes ContainerScaleEffectCloseKeyframe {
+        10% {
+          
+        height: ${imageBounding.height * imageScalePercent}px !important;
+        width: ${scaleWidthPercent}% !important;
+
+
+        }
+        90% {
+                  top: ${imageBounding.y}px !important;
+        left: ${imageBounding.x}px !important;
+        }
+      }
+    `;
+    injectStyle(keyframesStyle);
+
+
+
     const ScaleEffectCenter = keyframes`
       to {
         top: 50%;
@@ -73,6 +104,8 @@ export default function ContainerScaleEffect(props) {
       animation-duration: 2s, 2s;
       animation-fill-mode: forwards;
       animation-name: ${ScaleEffectCenter}, ${ScaleEffectSize}`
+
+      console.log(AnymatedContainer)
 
     scaleContainer = <AnymatedContainer 
         ref={scaleRef}

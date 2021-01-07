@@ -1,91 +1,76 @@
-import React, {useRef} from "react"
+import React, {useRef, useState} from "react"
 import ReactDOM from 'react-dom'
 import styled, { keyframes } from "styled-components"
-import injectStyle from './injectStyle'
 
 /* props
     position = fixed
     opacity = 0
     scaleWidthPercent = 80
+
+
+    ScaleEffect's chield will be change with width 100%
  */
 
 
 export default function ContainerScaleEffect(props) {
-  let scaleRef = useRef(null);
-
+  let chieldElement = React.cloneElement(props.children, { width: "100%" });
 
   let element = null
-  let scaleContainer = null
-  let imageBounding = null
 
   const closeEvent = () => {
-    imageBounding = element.getBoundingClientRect()
+    const bounding = element.getBoundingClientRect()
 
     const scaleWidthPercent = props.scaleWidthPercent ? props.scaleWidthPercent : 80
-    const imageScalePercent = (window.innerWidth * scaleWidthPercent / 100) * (100 / imageBounding.width) / 100
+    const imageScalePercent = (window.innerWidth * scaleWidthPercent / 100) * (100 / bounding.width) / 100
 
 
-
-
-          // height: 300px;
-          // width: 30%;
-
-          //           top: ${imageBounding.y}px;
-          // left: ${imageBounding.x}px;
-
-
-
-    const closeStyle = `
-    .ContainerScaleEffectClose {
-      -webkit-animation-duration:2s,2s;
-      animation-duration:2s,2s;
-      -webkit-animation-fill-mode:forwards;
-      animation-fill-mode:forwards;
-      -webkit-animation-name:ContainerScaleEffectCloseKeyframe;
-      animation-name:ContainerScaleEffectCloseKeyframe;
-
-            animation: ContainerScaleEffectCloseKeyframe 10s infinite;
-
+    const ScaleEffectCloseSize = keyframes`
+      to {
+        height: ${bounding.height}px;
+        width: ${bounding.width}px;
       }`
-    injectStyle(closeStyle)
 
-    setTimeout(scaleRef.current.classList.add("ContainerScaleEffectClose"), 1000)
+    const ScaleEffectDefPosition = keyframes`
+      to {
+        transform: initial;
+        top: ${bounding.y}px;
+        left: ${bounding.x}px;
+      }`
+
+
+
+    const AnymatedContainer = styled.div`
+      animation-delay: 0s;
+      animation-duration: 2s, 2s;
+      animation-fill-mode: forwards;
+      animation-name: ${ScaleEffectCloseSize}, ${ScaleEffectDefPosition}`
+
+    const scale = <div style={{position: "absolute", width: "100%", height: "100%"}}>
+      <AnymatedContainer
+        style={{"backgroundColor": "black", "position": props.position ? props.position : "fixed", "left": "50%", "top": "50%", "transform": "translate(-50%, -50%)", "width": `${scaleWidthPercent}%`, "height": `${bounding.height * imageScalePercent}px`}}
+      >{ chieldElement }</AnymatedContainer>
+    </div>
+
+    ReactDOM.render(scale, document.getElementById('ScaleEffect'));
+ 
+    setTimeout(() => {
+      document.getElementById("ScaleEffect").outerHTML = "";
+      element.style.opacity = 1 //to do
+    },2000)
     
-    // document.getElementById("ScaleEffect").outerHTML = "";
-    element.style.opacity = 1 //to do
   }
 
-  const handleImageScale = (target) => {
+  const handleScale = (target) => {
     element = target
-    imageBounding = target.getBoundingClientRect()
+    const bounding = element.getBoundingClientRect()
 
     const scaleWidthPercent = props.scaleWidthPercent ? props.scaleWidthPercent : 80
-    const imageScalePercent = (window.innerWidth * scaleWidthPercent / 100) * (100 / imageBounding.width) / 100
+    const imageScalePercent = (window.innerWidth * scaleWidthPercent / 100) * (100 / bounding.width) / 100
 
 
-    target.style.opacity = props.opacity ? props.opacity : 0    
+    element.style.opacity = props.opacity ? props.opacity : 0    
 
     //style
-
-    const keyframesStyle = `
-      @-webkit-keyframes ContainerScaleEffectCloseKeyframe {
-        10% {
-          
-        height: ${imageBounding.height * imageScalePercent}px !important;
-        width: ${scaleWidthPercent}% !important;
-
-
-        }
-        90% {
-                  top: ${imageBounding.y}px !important;
-        left: ${imageBounding.x}px !important;
-        }
-      }
-    `;
-    injectStyle(keyframesStyle);
-
-
-
     const ScaleEffectCenter = keyframes`
       to {
         top: 50%;
@@ -95,9 +80,10 @@ export default function ContainerScaleEffect(props) {
 
     const ScaleEffectSize = keyframes`
       to {
-        height: ${imageBounding.height * imageScalePercent}px;
+        height: ${bounding.height * imageScalePercent}px;
         width: ${scaleWidthPercent}%;
       }`
+
 
     const AnymatedContainer = styled.div`
       animation-delay: 0s;
@@ -105,15 +91,10 @@ export default function ContainerScaleEffect(props) {
       animation-fill-mode: forwards;
       animation-name: ${ScaleEffectCenter}, ${ScaleEffectSize}`
 
-      console.log(AnymatedContainer)
-
-    scaleContainer = <AnymatedContainer 
-        ref={scaleRef}
-        style={{"backgroundColor": "black", "position": props.position ? props.position : "fixed", "left": imageBounding.x, "top": imageBounding.y, "width": imageBounding.width, "height": imageBounding.height}}
-      />
-
     const scale = <div onClick={() => closeEvent()} style={{position: "absolute", width: "100%", height: "100%"}}>
-      { scaleContainer }
+      <AnymatedContainer
+        style={{"backgroundColor": "black", "position": props.position ? props.position : "fixed", "left": bounding.x, "top": bounding.y, "width": bounding.width, "height": bounding.height}}
+      >{chieldElement}</AnymatedContainer>
     </div>
     
     let div = document.createElement('div');
@@ -122,8 +103,8 @@ export default function ContainerScaleEffect(props) {
     ReactDOM.render(scale, document.getElementById('ScaleEffect'));
   }
   return (
-    <div>
-      <img width="145px" onClick={(e) => handleImageScale(e.target)} src={props.src} />
+    <div onClick={(e) => handleScale(e.target)}>
+      {chieldElement}
     </div>
   );
 }     

@@ -6,23 +6,30 @@ import styled, { keyframes } from "styled-components"
     position = fixed
     opacity = 0
     scaleWidthPercent = 80
+    height = auto adapting / with type of size
+    anymationDelay = 0
+    anymationDurationSize = 2
+    anymationDurationPosition = 2
+    changeChild = true
 
-
-    ScaleEffect's chield will be change with width 100%
+    if want not change child content size set changeChild = false required to use your custom media width/height   
  */
 
 
 export default function ContainerScaleEffect(props) {
-  let chieldElement = React.cloneElement(props.children, { width: "100%" });
+  let chieldElement = props.changeChild === undefined || props.changeChild ? React.cloneElement(props.children, { width: "100%", height: 'auto' }) : React.cloneElement(props.children);
 
   let element = null
+
+  const anymationDelay = props.anymationDelay ? props.anymationDelay : 0
+  const anymationDurationSize = props.anymationDurationSize ? props.anymationDurationSize : 2
+  const anymationDurationPosition = props.anymationDurationPosition ? props.anymationDurationPosition : 2
 
   const closeEvent = () => {
     const bounding = element.getBoundingClientRect()
 
     const scaleWidthPercent = props.scaleWidthPercent ? props.scaleWidthPercent : 80
     const imageScalePercent = (window.innerWidth * scaleWidthPercent / 100) * (100 / bounding.width) / 100
-
 
     const ScaleEffectCloseSize = keyframes`
       to {
@@ -37,11 +44,9 @@ export default function ContainerScaleEffect(props) {
         left: ${bounding.x}px;
       }`
 
-
-
     const AnymatedContainer = styled.div`
-      animation-delay: 0s;
-      animation-duration: 2s, 2s;
+      animation-delay: ${anymationDelay}s;
+      animation-duration: ${anymationDurationSize}s, ${anymationDurationPosition}s;
       animation-fill-mode: forwards;
       animation-name: ${ScaleEffectCloseSize}, ${ScaleEffectDefPosition}`
 
@@ -55,9 +60,8 @@ export default function ContainerScaleEffect(props) {
  
     setTimeout(() => {
       document.getElementById("ScaleEffect").outerHTML = "";
-      element.style.opacity = 1 //to do
-    },2000)
-    
+      element.style.opacity = props.opacity ? props.opacity : 1
+    }, anymationDelay + anymationDurationSize + anymationDurationPosition * 1000)
   }
 
   const handleScale = (target) => {
@@ -68,7 +72,7 @@ export default function ContainerScaleEffect(props) {
     const imageScalePercent = (window.innerWidth * scaleWidthPercent / 100) * (100 / bounding.width) / 100
 
 
-    element.style.opacity = props.opacity ? props.opacity : 0    
+    element.style.opacity = props.opacity ? props.opacity : 0
 
     //style
     const ScaleEffectCenter = keyframes`
@@ -80,14 +84,14 @@ export default function ContainerScaleEffect(props) {
 
     const ScaleEffectSize = keyframes`
       to {
-        height: ${bounding.height * imageScalePercent}px;
+        height: ${props.height ? props.height : bounding.height * imageScalePercent + 'px'};
         width: ${scaleWidthPercent}%;
       }`
 
 
     const AnymatedContainer = styled.div`
-      animation-delay: 0s;
-      animation-duration: 2s, 2s;
+      animation-delay: ${anymationDelay}s;
+      animation-duration: ${anymationDurationSize}s, ${anymationDurationPosition}s;
       animation-fill-mode: forwards;
       animation-name: ${ScaleEffectCenter}, ${ScaleEffectSize}`
 

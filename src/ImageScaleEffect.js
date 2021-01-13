@@ -1,4 +1,4 @@
-import React, {useRef, useState} from "react"
+import React, {useState} from "react"
 import ReactDOM from 'react-dom'
 import styled, { keyframes } from "styled-components"
 
@@ -6,20 +6,23 @@ import styled, { keyframes } from "styled-components"
     position = fixed
     opacity = 0
     scaleWidthPercent = 80
-    height = auto adapting / with type of size
     anymationDelay = 0
     anymationDurationSize = 2
     anymationDurationPosition = 2
-    changeChild = true
 
-    if want not change child content size set changeChild = false required to use your custom media width/height   
+    width = fit-content
+    height = fit-content
+
+    after = show same content
+
  */
 
 
 export default function ContainerScaleEffect(props) {
-  let chieldElement = props.changeChild === undefined || props.changeChild ? React.cloneElement(props.children, { width: "100%", height: 'auto' }) : React.cloneElement(props.children);
+  let chieldElement = React.cloneElement(props.children, { width: "100%", height: '100%' })
 
   let element = null
+  let elementDef = {style: {}}
 
   const anymationDelay = props.anymationDelay ? props.anymationDelay : 0
   const anymationDurationSize = props.anymationDurationSize ? props.anymationDurationSize : 2
@@ -46,21 +49,23 @@ export default function ContainerScaleEffect(props) {
 
     const AnymatedContainer = styled.div`
       animation-delay: ${anymationDelay}s;
-      animation-duration: ${anymationDurationSize}s, ${anymationDurationPosition}s;
+      animation-duration: ${anymationDurationPosition}s, ${anymationDurationSize }s;
       animation-fill-mode: forwards;
       animation-name: ${ScaleEffectCloseSize}, ${ScaleEffectDefPosition}`
 
     const scale = <div style={{position: "absolute", width: "100%", height: "100%"}}>
       <AnymatedContainer
         style={{"backgroundColor": "black", "position": props.position ? props.position : "fixed", "left": "50%", "top": "50%", "transform": "translate(-50%, -50%)", "width": `${scaleWidthPercent}%`, "height": `${bounding.height * imageScalePercent}px`}}
-      >{ chieldElement }</AnymatedContainer>
+      >
+        { chieldElement }
+      </AnymatedContainer>
     </div>
 
     ReactDOM.render(scale, document.getElementById('ScaleEffect'));
  
     setTimeout(() => {
       document.getElementById("ScaleEffect").outerHTML = "";
-      element.style.opacity = props.opacity ? props.opacity : 1
+      element.style.opacity = elementDef.style.opacity
     }, anymationDelay + anymationDurationSize + anymationDurationPosition * 1000)
   }
 
@@ -72,7 +77,10 @@ export default function ContainerScaleEffect(props) {
     const imageScalePercent = (window.innerWidth * scaleWidthPercent / 100) * (100 / bounding.width) / 100
 
 
-    element.style.opacity = props.opacity ? props.opacity : 0
+    if(props.opacity) {
+      elementDef.style.opacity = element.style.opacity
+      element.style.opacity = props.opacity
+    }
 
     //style
     const ScaleEffectCenter = keyframes`
@@ -91,24 +99,28 @@ export default function ContainerScaleEffect(props) {
 
     const AnymatedContainer = styled.div`
       animation-delay: ${anymationDelay}s;
-      animation-duration: ${anymationDurationSize}s, ${anymationDurationPosition}s;
+      animation-duration: ${anymationDurationPosition}s, ${anymationDurationSize}s;
       animation-fill-mode: forwards;
       animation-name: ${ScaleEffectCenter}, ${ScaleEffectSize}`
 
+
     const scale = <div onClick={() => closeEvent()} style={{position: "absolute", width: "100%", height: "100%"}}>
-      <AnymatedContainer
-        style={{"backgroundColor": "black", "position": props.position ? props.position : "fixed", "left": bounding.x, "top": bounding.y, "width": bounding.width, "height": bounding.height}}
-      >{chieldElement}</AnymatedContainer>
+      <AnymatedContainer style={{"backgroundColor": "black", "position": props.position ? props.position : "fixed", "left": bounding.x, "top": bounding.y, "width": bounding.width, "height": bounding.height}}>
+        {chieldElement}
+      </AnymatedContainer>
     </div>
     
     let div = document.createElement('div');
     div.setAttribute("id", "ScaleEffect")
     document.getElementById('root').appendChild(div)
-    ReactDOM.render(scale, document.getElementById('ScaleEffect'));
+    ReactDOM.render(scale, document.getElementById('ScaleEffect'), () => {
+      //to do after anymation can change content
+    })
   }
+
   return (
-    <div onClick={(e) => handleScale(e.target)}>
-      {chieldElement}
+    <div style={{width: props.width ? props.width : 'fit-content', height: props.height ? props.height : 'fit-content'}} onClick={(e) => handleScale(e.target)}>
+      { chieldElement }
     </div>
   );
-}     
+}

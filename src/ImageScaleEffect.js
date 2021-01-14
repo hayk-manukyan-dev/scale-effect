@@ -27,6 +27,15 @@ export default function ContainerScaleEffect(props) {
   const anymationDelay = props.anymationDelay ? props.anymationDelay : 0
   const anymationDurationSize = props.anymationDurationSize ? props.anymationDurationSize : 2
   const anymationDurationPosition = props.anymationDurationPosition ? props.anymationDurationPosition : 2
+  
+  const handleScroll = () => {
+    if(document.getElementById("ScaleEffect")) {
+      document.getElementById("ScaleEffect").outerHTML = "";
+    }
+    element.style.opacity = elementDef.style.opacity
+  }
+
+  window.addEventListener('scroll', handleScroll);
 
   const closeEvent = () => {
     const bounding = element.getBoundingClientRect()

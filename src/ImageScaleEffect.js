@@ -28,16 +28,16 @@ export default function ContainerScaleEffect(props) {
   const anymationDurationSize = props.anymationDurationSize ? props.anymationDurationSize : 2
   const anymationDurationPosition = props.anymationDurationPosition ? props.anymationDurationPosition : 2
   
-  const handleScroll = () => {
+  const handleImmediateClose = () => {
     if(document.getElementById("ScaleEffect")) {
       document.getElementById("ScaleEffect").outerHTML = "";
-      if(element) {
-        element.style.opacity = elementDef.style.opacity
-      }
+    }
+    if(element) {
+      element.style.opacity = elementDef.style.opacity
     }
   }
 
-  window.addEventListener('scroll', handleScroll);
+  window.addEventListener('scroll', handleImmediateClose);
 
   const closeEvent = () => {
     const bounding = element.getBoundingClientRect()
@@ -75,8 +75,7 @@ export default function ContainerScaleEffect(props) {
     ReactDOM.render(scale, document.getElementById('ScaleEffect'));
  
     setTimeout(() => {
-      document.getElementById("ScaleEffect").outerHTML = "";
-      element.style.opacity = elementDef.style.opacity
+      handleImmediateClose()
     }, anymationDelay + anymationDurationSize + anymationDurationPosition * 1000)
   }
 
@@ -87,8 +86,7 @@ export default function ContainerScaleEffect(props) {
     const scaleWidthPercent = props.scaleWidthPercent ? props.scaleWidthPercent : 80
     const imageScalePercent = (window.innerWidth * scaleWidthPercent / 100) * (100 / bounding.width) / 100
 
-
-    if(props.opacity) {
+    if(props.opacity !== undefined) {
       elementDef.style.opacity = element.style.opacity
       element.style.opacity = props.opacity
     }

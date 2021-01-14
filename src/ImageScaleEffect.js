@@ -31,8 +31,10 @@ export default function ContainerScaleEffect(props) {
   const handleScroll = () => {
     if(document.getElementById("ScaleEffect")) {
       document.getElementById("ScaleEffect").outerHTML = "";
+      if(element) {
+        element.style.opacity = elementDef.style.opacity
+      }
     }
-    element.style.opacity = elementDef.style.opacity
   }
 
   window.addEventListener('scroll', handleScroll);

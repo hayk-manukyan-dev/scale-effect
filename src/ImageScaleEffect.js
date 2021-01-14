@@ -15,6 +15,8 @@ import styled, { keyframes } from "styled-components"
 
     after = show same content
 
+    opacity issue when open another if openeld alredy
+
  */
 
 
